@@ -74,9 +74,11 @@ Check if pdftotext command is available.
 sub _has_pdftotext {
     my $self = shift;
     
-    # Check if pdftotext is in PATH
-    my $result = `which pdftotext 2>/dev/null`;
-    return $result ? 1 : 0;
+    # Check if pdftotext is in PATH using safer approach
+    foreach my $dir (split /:/, $ENV{PATH} || '') {
+        return 1 if -x "$dir/pdftotext";
+    }
+    return 0;
 }
 
 =head2 _read_with_pdftotext
@@ -88,8 +90,15 @@ Read PDF using pdftotext command.
 sub _read_with_pdftotext {
     my ($self, $filename) = @_;
     
-    # Use pdftotext to extract text
-    my $text = `pdftotext -layout "$filename" - 2>/dev/null`;
+    # Validate filename to prevent command injection
+    die "Invalid filename\n" if $filename =~ /[`\$;|&<>]/;
+    
+    # Use open() with list form for safer execution
+    open my $fh, '-|', 'pdftotext', '-layout', $filename, '-'
+        or die "Failed to run pdftotext: $!\n";
+    
+    my $text = do { local $/; <$fh> };
+    close $fh;
     
     if ($? != 0) {
         die "Failed to extract text from PDF using pdftotext\n";
