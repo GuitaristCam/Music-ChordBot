@@ -41,6 +41,7 @@ section "Verse";
 style "Hammered";
 
 foreach my $chord_ref (@all_chords) {
+    next unless defined $chord_ref->{root} && defined $chord_ref->{type};
     chord $chord_ref->{root} . " " . $chord_ref->{type} . " 4";
 }
 
