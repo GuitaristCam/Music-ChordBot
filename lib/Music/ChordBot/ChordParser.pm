@@ -64,7 +64,7 @@ sub parse_chord {
         my $rest = $2;
         
         # Normalize root notation
-        $root =~ s/b$/♭/;  # Convert b to flat symbol if needed
+        $root =~ s/b$/♭/;  # Convert b to flat symbol
         
         # Parse the chord type
         my $type = $self->_parse_chord_type($rest);
@@ -170,6 +170,9 @@ sub _parse_chord_type {
             return $chord_map{$key};
         }
     }
+    
+    # Log warning for unrecognized chord type
+    warn "Warning: Unrecognized chord type '$type_str', defaulting to Maj\n" if length($type_str) > 0;
     
     # Default to Maj if not recognized
     return 'Maj';

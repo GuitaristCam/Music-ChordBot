@@ -91,7 +91,7 @@ sub _read_with_pdftotext {
     my ($self, $filename) = @_;
     
     # Validate filename to prevent command injection
-    die "Invalid filename\n" if $filename =~ /[`\$;|&<>]/;
+    die "Invalid filename\n" if $filename =~ /[`'\$;|&<>]/;
     
     # Use open() with list form for safer execution
     open my $fh, '-|', 'pdftotext', '-layout', $filename, '-'

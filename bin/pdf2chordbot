@@ -25,13 +25,14 @@ pdf2chordbot - Convert PDF chord sheets to ChordBot JSON format
         --tempo BPM        Tempo in beats per minute (default: 120)
         --style STYLE      ChordBot style preset (default: "Pop")
         --section NAME     Section name (default: "Main")
+        --duration BEATS   Default chord duration in beats (default: 4)
         --output FILE      Output file (default: STDOUT)
         --help             Show this help message
         
     Examples:
         pdf2chordbot song.pdf > song.json
         pdf2chordbot --title "My Song" --tempo 90 song.pdf
-        pdf2chordbot --style "Jazz" --output song.json input.pdf
+        pdf2chordbot --style "Jazz" --duration 2 --output song.json input.pdf
 
 =head1 DESCRIPTION
 
@@ -50,16 +51,18 @@ my $title;
 my $tempo = 120;
 my $style = "Pop";
 my $section_name = "Main";
+my $duration = 4;
 my $output_file;
 my $help;
 
 GetOptions(
-    'title=s'   => \$title,
-    'tempo=i'   => \$tempo,
-    'style=s'   => \$style,
-    'section=s' => \$section_name,
-    'output=s'  => \$output_file,
-    'help'      => \$help,
+    'title=s'    => \$title,
+    'tempo=i'    => \$tempo,
+    'style=s'    => \$style,
+    'section=s'  => \$section_name,
+    'duration=i' => \$duration,
+    'output=s'   => \$output_file,
+    'help'       => \$help,
 ) or pod2usage(2);
 
 pod2usage(1) if $help;
@@ -112,9 +115,9 @@ tempo $tempo;
 section $section_name;
 style $style;
 
-# Add chords with default duration of 4 beats
+# Add chords with specified duration
 foreach my $chord_ref (@all_chords) {
-    chord $chord_ref->{root} . " " . $chord_ref->{type} . " 4";
+    chord $chord_ref->{root} . " " . $chord_ref->{type} . " $duration";
 }
 
 # Get the JSON output
@@ -137,7 +140,7 @@ Current limitations:
 
 =over 4
 
-=item * Assumes all chords have duration of 4 beats
+=item * All chords use the same duration (configurable via --duration option)
 
 =item * No automatic section detection
 
