@@ -170,12 +170,14 @@ O_FILES  =
 H_FILES  = 
 MAN1PODS = 
 MAN3PODS = lib/Music/ChordBot.pm \
+	lib/Music/ChordBot/ChordParser.pm \
 	lib/Music/ChordBot/Opus.pm \
 	lib/Music/ChordBot/Opus/Base.pm \
 	lib/Music/ChordBot/Opus/Section.pm \
 	lib/Music/ChordBot/Opus/Section/Chord.pm \
 	lib/Music/ChordBot/Opus/Section/Style.pm \
 	lib/Music/ChordBot/Opus/Section/Style/Track.pm \
+	lib/Music/ChordBot/PDFReader.pm \
 	lib/Music/ChordBot/Song.pm
 
 # Where is the Config information that we are using/depend on
@@ -200,12 +202,14 @@ PERL_ARCHIVE_AFTER =
 
 
 TO_INST_PM = lib/Music/ChordBot.pm \
+	lib/Music/ChordBot/ChordParser.pm \
 	lib/Music/ChordBot/Opus.pm \
 	lib/Music/ChordBot/Opus/Base.pm \
 	lib/Music/ChordBot/Opus/Section.pm \
 	lib/Music/ChordBot/Opus/Section/Chord.pm \
 	lib/Music/ChordBot/Opus/Section/Style.pm \
 	lib/Music/ChordBot/Opus/Section/Style/Track.pm \
+	lib/Music/ChordBot/PDFReader.pm \
 	lib/Music/ChordBot/Song.pm
 
 
@@ -432,21 +436,25 @@ POD2MAN = $(POD2MAN_EXE)
 
 manifypods : pure_all config  \
 	lib/Music/ChordBot.pm \
+	lib/Music/ChordBot/ChordParser.pm \
 	lib/Music/ChordBot/Opus.pm \
 	lib/Music/ChordBot/Opus/Base.pm \
 	lib/Music/ChordBot/Opus/Section.pm \
 	lib/Music/ChordBot/Opus/Section/Chord.pm \
 	lib/Music/ChordBot/Opus/Section/Style.pm \
 	lib/Music/ChordBot/Opus/Section/Style/Track.pm \
+	lib/Music/ChordBot/PDFReader.pm \
 	lib/Music/ChordBot/Song.pm
 	$(NOECHO) $(POD2MAN) --section=$(MAN3EXT) --perm_rw=$(PERM_RW) -u \
 	  lib/Music/ChordBot.pm $(INST_MAN3DIR)/Music::ChordBot.$(MAN3EXT) \
+	  lib/Music/ChordBot/ChordParser.pm $(INST_MAN3DIR)/Music::ChordBot::ChordParser.$(MAN3EXT) \
 	  lib/Music/ChordBot/Opus.pm $(INST_MAN3DIR)/Music::ChordBot::Opus.$(MAN3EXT) \
 	  lib/Music/ChordBot/Opus/Base.pm $(INST_MAN3DIR)/Music::ChordBot::Opus::Base.$(MAN3EXT) \
 	  lib/Music/ChordBot/Opus/Section.pm $(INST_MAN3DIR)/Music::ChordBot::Opus::Section.$(MAN3EXT) \
 	  lib/Music/ChordBot/Opus/Section/Chord.pm $(INST_MAN3DIR)/Music::ChordBot::Opus::Section::Chord.$(MAN3EXT) \
 	  lib/Music/ChordBot/Opus/Section/Style.pm $(INST_MAN3DIR)/Music::ChordBot::Opus::Section::Style.$(MAN3EXT) \
 	  lib/Music/ChordBot/Opus/Section/Style/Track.pm $(INST_MAN3DIR)/Music::ChordBot::Opus::Section::Style::Track.$(MAN3EXT) \
+	  lib/Music/ChordBot/PDFReader.pm $(INST_MAN3DIR)/Music::ChordBot::PDFReader.$(MAN3EXT) \
 	  lib/Music/ChordBot/Song.pm $(INST_MAN3DIR)/Music::ChordBot::Song.$(MAN3EXT) 
 
 
@@ -886,12 +894,14 @@ ppd :
 pm_to_blib : $(FIRST_MAKEFILE) $(TO_INST_PM)
 	$(NOECHO) $(ABSPERLRUN) -MExtUtils::Install -e 'pm_to_blib({@ARGV}, '\''$(INST_LIB)/auto'\'', q[$(PM_FILTER)], '\''$(PERM_DIR)'\'')' -- \
 	  'lib/Music/ChordBot.pm' 'blib/lib/Music/ChordBot.pm' \
+	  'lib/Music/ChordBot/ChordParser.pm' 'blib/lib/Music/ChordBot/ChordParser.pm' \
 	  'lib/Music/ChordBot/Opus.pm' 'blib/lib/Music/ChordBot/Opus.pm' \
 	  'lib/Music/ChordBot/Opus/Base.pm' 'blib/lib/Music/ChordBot/Opus/Base.pm' \
 	  'lib/Music/ChordBot/Opus/Section.pm' 'blib/lib/Music/ChordBot/Opus/Section.pm' \
 	  'lib/Music/ChordBot/Opus/Section/Chord.pm' 'blib/lib/Music/ChordBot/Opus/Section/Chord.pm' \
 	  'lib/Music/ChordBot/Opus/Section/Style.pm' 'blib/lib/Music/ChordBot/Opus/Section/Style.pm' \
 	  'lib/Music/ChordBot/Opus/Section/Style/Track.pm' 'blib/lib/Music/ChordBot/Opus/Section/Style/Track.pm' \
+	  'lib/Music/ChordBot/PDFReader.pm' 'blib/lib/Music/ChordBot/PDFReader.pm' \
 	  'lib/Music/ChordBot/Song.pm' 'blib/lib/Music/ChordBot/Song.pm' 
 	$(NOECHO) $(TOUCH) pm_to_blib
 

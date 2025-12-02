@@ -17,6 +17,21 @@ ChordBot web site: http://www.chordbot.com .
 Note that Music::ChordBot requires the full version of ChordBot since
 the Lite version does not have import capabilities. 
 
+TOOLS
+
+This distribution includes pdf2chordbot, a command-line tool for
+converting PDF chord sheets to ChordBot JSON format.
+
+    pdf2chordbot song.pdf > song.json
+    pdf2chordbot --title "My Song" --tempo 90 --style "Jazz" input.pdf
+
+For more information:
+
+    perldoc pdf2chordbot
+
+The tool requires either poppler-utils (pdftotext command) or the
+CAM::PDF Perl module to be installed.
+
 INSTALLATION
 
 To install this module, run the following commands:
@@ -36,6 +51,12 @@ perldoc command.
 But you'll probably be mostly interested in
 
     perldoc Music::ChordBot::Song
+    perldoc pdf2chordbot
+    perldoc Music::ChordBot::ChordParser
+
+For PDF chord sheet conversion:
+
+    perldoc Music::ChordBot::PDFReader
 
 You can also look for information at:
 
