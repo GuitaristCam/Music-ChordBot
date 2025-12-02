@@ -1,3 +1,11 @@
+0.92	2025-12-02
+
+	Add PDF to ChordBot JSON conversion tool
+	New bin/pdf2chordbot command-line tool
+	New Music::ChordBot::ChordParser module for chord recognition
+	New Music::ChordBot::PDFReader module for PDF text extraction
+	Add tests for chord parsing and integration
+
 0.91	2013-05-07
 
 	Output json in canonical form so the tests can succeed.

@@ -1,0 +1,173 @@
+#!/usr/bin/env perl
+
+use strict;
+use warnings;
+use utf8;
+use Getopt::Long;
+use Pod::Usage;
+use FindBin;
+use lib "$FindBin::Bin/../lib";
+
+use Music::ChordBot::PDFReader;
+use Music::ChordBot::ChordParser;
+use Music::ChordBot::Song;
+
+=head1 NAME
+
+pdf2chordbot - Convert PDF chord sheets to ChordBot JSON format
+
+=head1 SYNOPSIS
+
+    pdf2chordbot [options] <input.pdf>
+    
+    Options:
+        --title TITLE      Song title (default: extracted from filename)
+        --tempo BPM        Tempo in beats per minute (default: 120)
+        --style STYLE      ChordBot style preset (default: "Pop")
+        --section NAME     Section name (default: "Main")
+        --output FILE      Output file (default: STDOUT)
+        --help             Show this help message
+        
+    Examples:
+        pdf2chordbot song.pdf > song.json
+        pdf2chordbot --title "My Song" --tempo 90 song.pdf
+        pdf2chordbot --style "Jazz" --output song.json input.pdf
+
+=head1 DESCRIPTION
+
+This tool converts PDF chord sheets into ChordBot JSON format suitable
+for import into the ChordBot Android/iOS app.
+
+The tool attempts to:
+1. Extract text from the PDF
+2. Identify chord symbols
+3. Generate a ChordBot song structure
+4. Output JSON format
+
+=cut
+
+my $title;
+my $tempo = 120;
+my $style = "Pop";
+my $section_name = "Main";
+my $output_file;
+my $help;
+
+GetOptions(
+    'title=s'   => \$title,
+    'tempo=i'   => \$tempo,
+    'style=s'   => \$style,
+    'section=s' => \$section_name,
+    'output=s'  => \$output_file,
+    'help'      => \$help,
+) or pod2usage(2);
+
+pod2usage(1) if $help;
+pod2usage("No input PDF file specified") unless @ARGV;
+
+my $pdf_file = $ARGV[0];
+die "File not found: $pdf_file\n" unless -f $pdf_file;
+
+# Extract title from filename if not provided
+unless ($title) {
+    $title = $pdf_file;
+    $title =~ s/\.pdf$//i;
+    $title =~ s/.*[\/\\]//;  # Remove path
+    $title =~ s/[-_]/ /g;    # Replace - and _ with spaces
+    $title = ucfirst($title);
+}
+
+# Read PDF and extract text
+my $reader = Music::ChordBot::PDFReader->new();
+my $text;
+eval {
+    $text = $reader->read_pdf($pdf_file);
+};
+if ($@) {
+    die "Error reading PDF: $@";
+}
+
+# Parse chords from text
+my $parser = Music::ChordBot::ChordParser->new();
+my @all_chords;
+
+foreach my $line (split /\n/, $text) {
+    # Skip empty lines
+    next unless $line =~ /\S/;
+    
+    # Try to extract chords from this line
+    my @chords = $parser->extract_chords_from_line($line);
+    push @all_chords, @chords if @chords;
+}
+
+# Check if we found any chords
+unless (@all_chords) {
+    warn "Warning: No chords found in PDF file\n";
+}
+
+# Build the song using Music::ChordBot::Song API
+song $title;
+tempo $tempo;
+
+section $section_name;
+style $style;
+
+# Add chords with default duration of 4 beats
+foreach my $chord_ref (@all_chords) {
+    chord $chord_ref->{root} . " " . $chord_ref->{type} . " 4";
+}
+
+# Get the JSON output
+my $json = Music::ChordBot::Song::json();
+
+# Write output
+if ($output_file) {
+    open my $fh, '>', $output_file or die "Cannot open $output_file: $!\n";
+    print $fh $json, "\n";
+    close $fh;
+    print STDERR "Converted $pdf_file to $output_file\n";
+    print STDERR "Found " . scalar(@all_chords) . " chords\n";
+} else {
+    print $json, "\n";
+}
+
+=head1 LIMITATIONS
+
+Current limitations:
+
+=over 4
+
+=item * Assumes all chords have duration of 4 beats
+
+=item * No automatic section detection
+
+=item * May not recognize all chord notations
+
+=item * Requires clean, text-based PDF files
+
+=back
+
+=head1 DEPENDENCIES
+
+Requires one of:
+
+=over 4
+
+=item * poppler-utils (pdftotext command) - recommended
+
+=item * CAM::PDF Perl module - fallback
+
+=back
+
+=head1 AUTHOR
+
+Music::ChordBot was written by Johan Vromans.
+
+=head1 COPYRIGHT
+
+Copyright (C) 2013,2025 Johan Vromans.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+=cut
